@@ -15,7 +15,7 @@ table1=tibble(
   'link'=NA)
 
 
-for(k in 1:5){
+for(k in 1:10){
   print(k)
   url=paste0('https://scrapeme.live/product-category/pokemon/page/',k,'/')
   
@@ -82,8 +82,8 @@ table1=table1 %>% mutate(nom=tolower(nom))
 
 for(k in 1:nrow(table1)){
   print(k)
-  pokename=table1[k,'nom']
-
+  pokename=table1[k,'nom'] %>% pull()
+  
   json=table2[k,'results.url']
   
   ab=fromJSON(json)['abilities'][[1]]
@@ -96,7 +96,7 @@ for(k in 1:nrow(table1)){
   spd=x[6]
   hp;atk;def;spd
   y=fromJSON(json)['types'][[1]] %>% pull(type) %>% pull(name)
-  y
+
   local=tibble('name'=pokename,'type'=list(y),'abilities'=list(ab2),'hp_n'=hp,'atk'=atk,'def'=def,'spd'=spd)
   abilities=rbind(abilities,local)
 }
@@ -111,22 +111,11 @@ abilities
 table1
 # Tidyverse
 
-table1 %>% 
+
 table_full=table1 %>% 
   select(nom,price,wght) %>% 
   mutate(nom=tolower(nom)) %>% 
   left_join(abilities,by=c('nom'='name'))
-
-aaa
-
-ab_levels=table_full$abilities %>% 
-  unlist() %>% 
-  unique()
-ty_levels=table_full$type %>% 
-  unlist() %>% 
-  unique()
-
-
   
 # MONGO DB
 
@@ -136,11 +125,8 @@ m=mongo('pokemon')
 m$count()
 
 if(m$count()>0) {m$drop()}
-
-m$insert(aaa)
 m$insert(table_full)
 
-m$find()
 
 
 m$aggregate('[
