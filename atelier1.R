@@ -112,11 +112,22 @@ table1
 # Tidyverse
 
 table1 %>% 
+table_full=table1 %>% 
   select(nom,price,wght) %>% 
   mutate(nom=tolower(nom)) %>% 
   left_join(abilities,by=c('nom'='name'))
 
 aaa
+
+ab_levels=table_full$abilities %>% 
+  unlist() %>% 
+  unique()
+ty_levels=table_full$type %>% 
+  unlist() %>% 
+  unique()
+
+
+  
 # MONGO DB
 
 
@@ -127,5 +138,21 @@ m$count()
 if(m$count()>0) {m$drop()}
 
 m$insert(aaa)
+m$insert(table_full)
 
 m$find()
+
+
+m$aggregate('[
+            {"$unwind": "$type"},
+            {
+            "$group":{
+              "_id":"$type",
+              "prix":{"$avg":"$price"},
+              "poids":{"$avg":"$wght"}
+              }
+            }
+            ]')
+ 
+
+
