@@ -119,12 +119,12 @@ table_full=table1 %>%
   
 # MONGO DB
 
-
+if(m$count()>0) {m$drop()}
 
 m=mongo('pokemon')
 m$count()
 
-if(m$count()>0) {m$drop()}
+
 m$insert(table_full)
 
 
